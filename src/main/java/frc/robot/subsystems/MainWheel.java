@@ -29,21 +29,24 @@ public class MainWheel extends SubsystemBase {
         // This method will be called once per scheduler run during simulation
     }
 
-    public Command setVoltage(double volts) {
-        return runOnce(() -> {
+    public Command setVoltage(final double volts) {
+        return this.runOnce(() -> {
             wheelMotor1.setVoltage(volts);
-            wheelMotor2.setVoltage(volts);
+            wheelMotor2.setVoltage(-volts);
         });
     }
     
-    public Command setVoltageAndStop(double volts) {
-        return setVoltage(volts).finallyDo(() -> {
+    public Command setVoltageAndStop(final double volts) {
+        return this.run(() -> {
+            wheelMotor1.setVoltage(volts);
+            wheelMotor2.setVoltage(-volts);
+        }).finallyDo(() -> {
             wheelMotor1.setVoltage(0);
             wheelMotor2.setVoltage(0);
         });
     }
 
-    public Command turnUntil(double volts, BooleanSupplier condition) {
+    public Command turnUntil(final double volts, final BooleanSupplier condition) {
         return setVoltageAndStop(volts).until(condition);
     }
 }   
